@@ -18,34 +18,7 @@
         }
         .btn-verificar-entrega {
             width: 48%;
-            background-color: <?php echo esc_attr($botao_cor); ?>;
-            color: <?php echo esc_attr($texto_botao_cor); ?>;
+         
             
         }
-        
-        h3.title-veri-frete {
-    text-align: center;
-     color: <?php echo esc_attr($texto_input_cor); ?>;
-}
-        
-        input#cep {
-            border: none;
-            box-shadow: none;
-            height: 50px;
-            border-radius: 8px;
-            background-color: <?php echo esc_attr($input_cor); ?>;
-            color: <?php echo esc_attr($texto_input_cor); ?>;
-        }
-        
-        input#cep::placeholder {
-   color: <?php echo esc_attr($texto_input_cor); ?>;
-}
-        
-        
-        
-        #resultado-frete {
-            width: 100%;
-            text-align: center;
-            margin-top: 20px;
-        }
- 
+     
