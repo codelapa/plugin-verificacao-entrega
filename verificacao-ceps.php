@@ -141,7 +141,74 @@ function formulario_verificacao_frete() {
         <button type="submit" class="btn-verificar-entrega"><?php echo esc_html($botao_texto); ?></button>
         <div id="resultado-frete"></div>
     </form>
-    
+     <script>
+        jQuery(document).ready(function($) {
+            // Aplicar máscara ao campo de CEP
+            $('#cep').mask('00000000');
+
+            // Função para definir um cookie
+            function setCookie(name, value, days) {
+                var expires = "";
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "") + expires + "; path=/";
+            }
+
+            // Função para obter um cookie
+            function getCookie(name) {
+                var nameEQ = name + "=";
+                var ca = document.cookie.split(';');
+                for (var i = 0; i < ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+                }
+                return null;
+            }
+
+            // Preencher o campo CEP com o valor do cookie, se existir
+            var savedCep = getCookie("cep");
+            if (savedCep) {
+                $('#cep').val(savedCep);
+            }
+
+            $('#form-verificacao-frete').on('submit', function(event) {
+                event.preventDefault();
+                
+                var cep = $('#cep').val();
+                var resultadoFrete = $('#resultado-frete');
+                resultadoFrete.html('Verificando...');
+
+                // Salvar o CEP em um cookie por 1 dia
+                setCookie("cep", cep, 1);
+
+                $.ajax({
+                    url: '<?php echo admin_url("admin-ajax.php"); ?>',
+                    type: 'POST',
+                    data: {
+                        action: 'verificar_frete_cep',
+                        cep: cep
+                    },
+                    success: function(response) {
+                        if (response.available) {
+                            var fretes = response.fretes.map(function(frete) {
+                                return '<p>' + frete.label + ': ' + frete.cost + '</p>';
+                            }).join('');
+                            resultadoFrete.html('<span style="color: green;">' + response.message + '</span>' + fretes);
+                        } else {
+                            resultadoFrete.html('<span style="color: red;">' + response.message + '</span>');
+                        }
+                    },
+                    error: function() {
+                        resultadoFrete.html('<span style="color: red;">Erro ao verificar o frete. Tente novamente.</span>');
+                    }
+                });
+            });
+        });
+    </script>
     <?php
     return ob_get_clean();
 }
